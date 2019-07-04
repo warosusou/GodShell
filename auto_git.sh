@@ -9,4 +9,4 @@ fi
 git pull
 git add -A
 git commit -m "${MESSAGE}"
-git push origin fire
+git push origin master
