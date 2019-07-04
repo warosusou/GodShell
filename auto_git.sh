@@ -7,7 +7,7 @@ if [ $# -lt 1 ]; then
 fi
 
 git fetch
-git rebase origin/master
+git rebase origin/$1
 git add -A
 git commit -m "${MESSAGE}"
-git push origin 
+git push origin $1
