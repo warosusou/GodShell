@@ -1,8 +1,13 @@
 #!/bin/bash
-MESSAGE=${1:-"fire"}
+MESSAGE=${2:-"fire"}
+
+if [ $# -lt 1 ]; then
+    echo "error: Not Enough Parameter"
+    exit 1
+fi
 
 git fetch
 git rebase origin/master
 git add -A
 git commit -m "${MESSAGE}"
-git push origin master
+git push origin 
