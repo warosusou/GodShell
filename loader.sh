@@ -13,23 +13,7 @@ if [ ! -d $1 ]; then
 fi
 cd $1
 if [ ! -f ${2}.c ]; then
-    echo "/*" >> $2.c
-    echo "課題"$1 >> $2.c
-    echo "問"$2 >> $2.c
-    echo "提出日" >> $2.c
-    echo "BP19076" >> $2.c
-    echo "石川太朗" >> $2.c
-    echo "*/" >> $2.c
-    echo >> $2.c
-    echo "#include<stdio.h>" >> $2.c
-    echo >> $2.c
-    echo "int main(){" >> $2.c
-    echo "  " >> $2.c
-    echo "  " >> $2.c
-    echo "  " >> $2.c
-    echo "  return 0;" >> $2.c
-    echo "  " >> $2.c
-    echo "}" >> $2.c
+    ../template.sh $1 $2
 else
     echo "File already exsists..."
 fi
