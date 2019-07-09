@@ -7,10 +7,10 @@ fi
 cd ./$1
 gcc -Wall $2.c -o $2.out
 
-echo "Compile end"
+echo "-----Compile end-----"
 
 ./$2.out
 
-echo "Program end"
+echo "-----Program end-----"
 
 exit 0
