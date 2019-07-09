@@ -13,7 +13,9 @@ if [ ! -d $1 ]; then
 fi
 cd $1
 if [ ! -f ${2}.c ]; then
-    ../template.sh $1 $2
+    cd ${SCRIPT_DIR}
+    ./template.sh $1 $2
+    cd $1
 else
     echo "File already exsists..."
 fi
