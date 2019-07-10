@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 3 ]; then
     echo "error: Not Enough Parameter"
     exit 1
 fi
-cd $1
+cd $3
 
 echo "//課題番号"${1}" 問題番号"${2}" 提出日 "" 学籍番号 名前" >> $2.c
 echo "" >> $2.c

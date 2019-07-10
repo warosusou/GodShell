@@ -16,6 +16,8 @@ if [ $# -eq 3 ]; then
     Assign_NUM=$2
     Question_NUM=$3
     Target_DIR=$1
+    if [ ! ${Target_DIR: -1} = / ]; then
+	Target_DIR=${Target_DIR}/
 fi
 
 Working_DIR=$Target_DIR$Assign_NUM
