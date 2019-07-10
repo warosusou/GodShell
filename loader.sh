@@ -18,6 +18,7 @@ if [ $# -eq 3 ]; then
     Target_DIR=$1
     if [ ! ${Target_DIR: -1} = / ]; then
 	Target_DIR=${Target_DIR}/
+    fi
 fi
 
 Working_DIR=$Target_DIR$Assign_NUM
