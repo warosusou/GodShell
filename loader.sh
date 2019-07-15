@@ -42,9 +42,7 @@ fi
 if [ $ALIVE -eq 0 ]; then
     echo "Starting Emacs"
     emacs $Question_NUM.c &
-    PROCESS_ID=$!
 else
-    PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | cut -f 3 -d " "`
     echo "Emacs already started"
 fi
 
@@ -53,7 +51,14 @@ do
     read -p "loader > " DATA
     if [ "$DATA" = "quit"  ];then
 	echo "提出日??"
-        kill ${PROCESS_ID}
+	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
+	PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | cut -f 3 -d " "`
+	if [ $ALIVE -eq 1 ]; then
+            kill ${PROCESS_ID}
+	elif [ $ALIVE -ge 2 ]; then
+	    echo "emacsが多重起動されています。--未定義動作"
+	    kill ${PROCESS_ID}
+	fi
 	break;
     elif [ "$DATA" = "build" ]; then
 	cd ${SCRIPT_DIR}
