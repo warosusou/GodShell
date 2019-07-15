@@ -37,7 +37,7 @@ else
     echo "File already exsists..."
 fi
 
-  ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
+ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
 
 if [ $ALIVE -eq 0 ]; then
     echo "Starting Emacs"
@@ -46,11 +46,17 @@ else
     echo "Emacs already started"
 fi
 
+
+
 while :
 do
     read -p "loader > " DATA
     if [ "$DATA" = "quit"  ];then
-	echo "提出日??"
+	date=(`date | cut -f 1 -d " "` `date | cut -f 3 -d " "` `date | cut -f 4 -d " "`)
+	temp=`cat $Question_NUM.c | sed -e "4,4s/.*/${date[0]}${date[1]}${date[2]}/"`
+	echo "$temp"  > $Question_NUM.c
+	echo "提出日が変更されました。 > ${date[0]}${date[1]}${date[2]}"
+
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
 	PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | cut -f 3 -d " "`
 	if [ $ALIVE -eq 1 ]; then
@@ -76,6 +82,8 @@ do
     elif [ "$DATA" = "debug" ]; then
 	echo "-----debug start-----"
 	# ここに試したいコマンドを書く
+	date=(`date | cut -f 1 -d " "` `date | cut -f 3 -d " "` `date | cut -f 4 -d " "`)
+	echo ${date[@]}
 	
 	
 	echo "-----debug end-----"
