@@ -14,6 +14,5 @@ cd ~/gitrepo/GodShell
 git fetch
 git rebase origin/$1
 git pull
-git add -A
-git commit -m "${MESSAGE}"
+git commit -a -m "${MESSAGE}"
 git push origin $1
