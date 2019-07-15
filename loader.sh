@@ -73,6 +73,13 @@ do
 	else
 	    echo "Emacs already started"
 	fi
+    elif [ "$DATA" = "debug" ]; then
+	echo "-----debug start-----"
+	# ここに試したいコマンドを書く
+	
+	echo "-----debug end-----"
+    fi
+
     else
 	echo "Unknown Command"
     fi
