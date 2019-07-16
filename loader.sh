@@ -73,7 +73,7 @@ do
 	break;
     elif [ "$DATA" = "build" ]; then
 	cd ${SCRIPT_DIR}
-	bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
+	bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" 
 	cd $Working_DIR
     elif [ "$DATA" = "emacs" ]; then
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
@@ -87,10 +87,23 @@ do
     elif [ "$DATA" = "debug" ]; then
 	echo "-----debug start-----"
 	# ここに試したいコマンドを書く
-	date=(`date | cut -f 1 -d " "` `date | cut -f 3 -d " "` `date | cut -f 4 -d " "`)
-	echo ${date[@]}
-	
-	
+	while :
+	do
+	read -p "debug > " key
+	if [ "$key" = "quit" ]; then
+	    break;
+	elif [ "$key" = "color" ]; then
+	    for i in `seq 30 37`
+	    do
+		for u in `seq 40 47`
+		do
+		    printf "\e[${i};${u}m${i}${u}だあああ\n\e[m"
+		done
+	    done
+	else
+	  echo "$key" | hexdump 
+	fi
+	done
 	echo "-----debug end-----"
     else
 	echo "Unknown Command"
