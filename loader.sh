@@ -33,6 +33,11 @@ if [ ! -f ${Question_NUM}.c ]; then
     cd ${SCRIPT_DIR}
     ./template.sh $Assign_NUM $Question_NUM $Working_DIR
     cd $Working_DIR
+
+    date=(`date | cut -f 1 -d " "` `date | cut -f 3 -d " "` `date | cut -f 4 -d " "`)
+    temp=`cat $Question_NUM.c | sed -e "4,4s/.*/${date[0]}${date[1]}${date[2]}/"`
+    echo "$temp"  > $Question_NUM.c
+    echo "提出日を変更しました。 > ${date[0]}${date[1]}${date[2]}"
 else
     echo "File already exsists..."
 fi
