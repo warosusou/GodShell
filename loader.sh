@@ -63,7 +63,7 @@ do
 	echo "提出日が変更されました。 > ${date[0]}${date[1]}${date[2]}"
 
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
-	PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | cut -f 3 -d " "`
+	PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | tr -s ' ' | cut -d ' ' -f 2`
 	if [ $ALIVE -eq 1 ]; then
             kill ${PROCESS_ID}
 	elif [ $ALIVE -ge 2 ]; then
