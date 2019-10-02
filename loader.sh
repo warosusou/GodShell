@@ -9,7 +9,7 @@ fi
 if [ $# -eq 2 ]; then
     Assign_NUM=$1
     Question_NUM=$2
-    Target_DIR=~/eip1/
+    Target_DIR=~/eip2/
 fi
 
 if [ $# -eq 3 ]; then
@@ -34,7 +34,7 @@ if [ ! -f ${Question_NUM}.c ]; then
     ./template.sh $Assign_NUM $Question_NUM $Working_DIR
     cd $Working_DIR
 
-    date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | cut -f 2 -d " "` `date | cut -f 3 -d " "`)
+    date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
     temp=`cat $Question_NUM.c | sed -e "4,4s/.*/${date[0]}${date[1]}${date[2]}/"`
     echo "$temp"  > $Question_NUM.c
     echo "提出日を変更しました。 > ${date[0]}${date[1]}${date[2]}"
@@ -57,7 +57,7 @@ while :
 do
     read -p "loader > " DATA
     if [ "$DATA" = "quit"  ];then
-	date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | cut -f 3 -d " "` `date | cut -f 4 -d " "`)
+	date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
 	temp=`cat $Question_NUM.c | sed -e "4,4s/.*/${date[0]}${date[1]}${date[2]}/"`
 	echo "$temp"  > $Question_NUM.c
 	echo "提出日が変更されました。 > ${date[0]}${date[1]}${date[2]}"
