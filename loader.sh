@@ -1,10 +1,26 @@
 #!/bin/bash
 
+function JsonReader {
+    function ReadByKey {
+	local result=$(printf "$1" | grep "$2" | sed 's/^.+://' | tr -d '"')
+	echo $result
+    }
+    local json=$(cat $1)
+    local formattedjson="$(printf $json | sed 's/^{\(.*\)}$/\1/' | tr ',' '\n')"
+    local results=()
+    while [ "$#" -gt 1 ]; do
+	results+=`ReadByKey $formattedjson $2`
+    done
+    echo ${results[@]}
+}
+
 if [ $# -ne 2 -a $# -ne 3 ]; then
     echo "error: Unexpected Parameter"
     echo $#
     exit 1
 fi
+
+json=$(cat config.json)
 
 if [ $# -eq 2 ]; then
     Assign_NUM=$1
@@ -35,7 +51,7 @@ if [ ! -f ${Question_NUM}.c ]; then
     cd $Working_DIR
 
     date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
-    temp=`cat $Question_NUM.c | sed -e "4,4s/.*/${date[0]}${date[1]}${date[2]}/"`
+    temp=`cat $Question_NUM.c | sed -e "1,4s/提出日/${date[0]}${date[1]}${date[2]}/"`
     echo "$temp"  > $Question_NUM.c
     echo "提出日を変更しました。 > ${date[0]}${date[1]}${date[2]}"
 else
@@ -58,7 +74,7 @@ do
     read -p "loader > " DATA
     if [ "$DATA" = "quit"  ];then
 	date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
-	temp=`cat $Question_NUM.c | sed -e "4,4s/.*/${date[0]}${date[1]}${date[2]}/"`
+	temp=`cat $Question_NUM.c | sed -e "1,4s/20.*日/${date[0]}${date[1]}${date[2]}/"`
 	echo "$temp"  > $Question_NUM.c
 	echo "提出日が変更されました。 > ${date[0]}${date[1]}${date[2]}"
 
