@@ -91,7 +91,12 @@ do
 	break;
     elif [ "$DATA" = "build" ]; then
 	cd ${SCRIPT_DIR}
-	bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" 
+	read -p "submit mode? y / n( else ) > " MODE
+	if [ $MODE = "y" ]; then
+	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" submit
+	else
+	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
+	fi
 	cd $Working_DIR
     elif [ "$DATA" = "emacs" ]; then
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
