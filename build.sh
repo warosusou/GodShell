@@ -14,7 +14,7 @@ if [ $# -eq 4 ]; then
 	fi
 	index=`expr $index + 1`
     done
-else
+elif [ $# -ne 3 ]; then
     echo "Error: Not Enough Parameter "
     exit 1
 fi
@@ -27,16 +27,16 @@ RESULT=$(cat <<EOF
 `./$2.out`
 EOF
 )
-echo $RESULT
+echo "$RESULT"
 
 echo "-----Program end-----"
 
 if [ $# -eq 4 ]; then
     echo "$2.txt was saved as new file."
-    echo ${INPUT[@]}
-    echo $RESULT
-    echo ${INPUT[@]} > $2.txt
-    echo ${RESULT} >> $2.txt
+    echo "${INPUT[@]}"
+    echo "$RESULT"
+    echo "${INPUT[@]}" > $2.txt
+    echo "${RESULT}" >> $2.txt
 fi
 
 exit 0
