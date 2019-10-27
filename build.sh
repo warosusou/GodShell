@@ -33,10 +33,12 @@ echo "-----Program end-----"
 
 if [ $# -eq 4 ]; then
     echo "$2.txt was saved as new file."
-    echo "${INPUT[@]}"
-    echo "$RESULT"
-    echo "${INPUT[@]}" > $2.txt
-    echo "${RESULT}" >> $2.txt
+    if [ ${#RESULT[@]} -eq 0 ]; then
+	echo "${RESULT}" > $2.txt
+    else
+	printf "%s\n" "${INPUT[@]}" > $2.txt
+	echo "${RESULT}" >> $2.txt
+    fi
 fi
 
 exit 0
