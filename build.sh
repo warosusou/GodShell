@@ -1,17 +1,18 @@
 #!/bin/bash
 
-declare -a INPUT=()
+INPUT=()
 index=0
 
 if [ $# -eq 4 ]; then
     echo "Input Planning Number : \"ban\" will be ban."
     while :
     do
-	read INPUT[${index}]
-	if [ ${INPUT[${index}]} = "ban" ]; then
-	    unset INPUT[${index}]
+	INPUT_BUF=()
+	read -p "> " -a INPUT_BUF
+	if [ ${INPUT_BUF[0]} = "ban" -a ${#INPUT_BUF[@]} -eq 1 ]; then
 	    break;
 	fi
+	INPUT[${index}]="${INPUT_BUF[*]}"
 	index=`expr $index + 1`
     done
 elif [ $# -ne 3 ]; then
