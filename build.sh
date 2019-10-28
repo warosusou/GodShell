@@ -34,7 +34,7 @@ echo "-----Program end-----"
 
 if [ $# -eq 4 ]; then
     echo "$2.txt was saved as new file."
-    if [ ${#RESULT[@]} -eq 0 ]; then
+    if [ ${#INPUT[@]} -eq 0 ]; then
 	echo "${RESULT}" > $2.txt
     else
 	printf "%s\n" "${INPUT[@]}" > $2.txt
