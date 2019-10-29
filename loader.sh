@@ -75,6 +75,7 @@ while :
 do
     read -p "loader > " DATA
     if [ "$DATA" = "quit"  ];then
+	cd ${Working_DIR}
 	date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
 	temp=`cat $Question_NUM.c | sed -e "1,4s/\(提出日\|[0-9]\{4\}年[0-9]\+月[0-9]\+日\)/${date[0]}${date[1]}${date[2]}/"`
 	echo "$temp"  > $Question_NUM.c
@@ -90,10 +91,10 @@ do
 	fi
 	break;
     elif [ "$DATA" = "build" ]; then
+	read -p "automation-mode ? [ y : n ] > " auto
 	cd ${SCRIPT_DIR}
-	read -p "submit mode? y / n( else ) > " MODE
-	if [ $MODE = "y" ]; then
-	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" submit
+	if [ "${auto}" = "y" ]; then 
+	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" "auto"
 	else
 	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
 	fi
@@ -108,7 +109,8 @@ do
 	    echo "Emacs already started"
 	fi
     elif [ "$DATA" = "debug" ]; then
-	./debug.sh
+	cd ${SCRIPT_DIR}
+	bash debug.sh
     else
 	echo "Unknown Command"
     fi
