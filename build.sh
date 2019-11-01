@@ -5,8 +5,16 @@ index=0
 
 cd $3
 gcc -Wall $2.c -o $2.out
+cstatus=$?
 
 echo "-----Compile end-----"
+
+if [ $cstatus -eq 0 ]; then
+    echo "Compling operates nomally."
+else
+    echo "Compling Error."
+    exit 1
+fi
 
 if [ $# -eq 4 ]; then
     echo "Input Planning Number : \"ban\" will be ban."
@@ -41,7 +49,7 @@ if [ $# -eq 4 ]; then
     if [ ${#INPUT[@]} -eq 0 ]; then
 	echo "${RESULT}" > $2.txt
     else
-	printf "%s\n" "${INPUT[@]}" > $2.txt
+	printf "\n%s\n" "${INPUT[@]}" > $2.txt
 	echo "${RESULT}" >> $2.txt
     fi
 else

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. Dictionary.sh
+
 function JsonReader {
     function ReadByKey {
 	local result=$(printf "$1" | grep "$2" | sed 's/^.+://' | tr -d '"')
@@ -73,7 +75,7 @@ fi
 
 while :
 do
-    read -p "loader > " DATA
+    ReadInput loader; DATA=$BUFF
     if [ "$DATA" = "quit"  ];then
 	cd ${Working_DIR}
 	date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
