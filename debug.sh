@@ -1,5 +1,7 @@
 #!/bin/bash
 
+declare -a history
+
 echo "-----debug start-----"
 # ここに試したいコマンドを書く
 while :
@@ -18,7 +20,7 @@ do
     elif [ "$key" = "typing" ]; then
 	while :
 	do
-	    read -p "? > ${BUFF}" -s -n 1 k
+	    IFS= read -p "? > ${BUFF}" -s -n 1 k
 	    if [ "$k" = $'\x1b' ]; then
 		read -n 1 k
 		if [ "$k" = $'\x5b' ]; then
@@ -30,18 +32,24 @@ do
 			$'\x44' ) echo "right arrow" ;;
 		    esac
 		fi
+	    elif [ "$k" = $'\x7f' ]; then
+		if [ ${#BUFF} -gt 0 ]; then
+		    BUFF=`echo "${BUFF:0:${#BUFF}-1}"`
+		fi
+	    elif [ "$k" = ""  ]; then
+		printf "\n"
+		echo "${BUFF}" | xxd
+		BUFF=""
+		break;
 	    else
 		BUFF=${BUFF}${k}
 	    fi
-	    printf "\e[100D"
-	    if [ "${#BUFF}" -ge 10 ]; then
-		printf "\n"
-		BUFF=""
-		break;
-	    fi
+	    printf "\e[100D\e[K"
 	done
     else
 	echo "$key" | xxd
     fi
+    history+=("$key")
+    echo "history = \"${history[@]}\""
 done
 echo "-----debug end-----"
