@@ -3,6 +3,11 @@
 INPUT=()
 index=0
 
+if [ $# -ne 3 ]; then
+    echo "Error: Not Enough Parameter "
+    exit 1
+fi
+
 cd $3
 gcc -Wall $2.c -o $2.out
 cstatus=$?
@@ -10,13 +15,14 @@ cstatus=$?
 echo "-----Compile end-----"
 
 if [ $cstatus -eq 0 ]; then
-    echo "Compling operates nomally."
+    printf "\e[32;1mCompling success.\e[m\n"
 else
-    echo "Compling Error."
+    printf "\e[31;1mCompling Error.\e[m\n"
     exit 1
 fi
 
-if [ $# -eq 4 ]; then
+read -p "automation-mode ? [ y : n ] > " auto
+if [ "${auto}" = "y" ]; then
     echo "Input Planning Number : \"ban\" will be ban."
     while :
     do
@@ -28,9 +34,6 @@ if [ $# -eq 4 ]; then
 	INPUT[${index}]="${INPUT_BUF[*]}"
 	index=`expr $index + 1`
     done
-elif [ $# -ne 3 ]; then
-    echo "Error: Not Enough Parameter "
-    exit 1
 fi
 
 #RESULT=$(cat <<EOF
@@ -38,7 +41,7 @@ fi
 #EOF
 #)
 
-if [ $# -eq 4 ]; then
+if [ "${auto}" = "y" ]; then
     RESULT=`echo ${INPUT[@]} | ./$2.out`
 
     echo "$RESULT"
@@ -49,14 +52,15 @@ if [ $# -eq 4 ]; then
     if [ ${#INPUT[@]} -eq 0 ]; then
 	echo "${RESULT}" > $2.txt
     else
-	printf "\n%s\n" "${INPUT[@]}" > $2.txt
+	printf "%s\n" "${INPUT[@]}" > $2.txt
+	printf "\n" >> $2.txt
 	echo "${RESULT}" >> $2.txt
     fi
 else
     ./$2.out
     echo "-----Program end-----"
     read -p "Need Emacs ? [ y : n ] > " NeedEmacs
-    if [ "${NeedEmacs}" = y ]; then
+    if [ "${NeedEmacs}" = "y" ]; then
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep $2.txt | wc -l`
 	if [ $ALIVE -eq 0 ]; then
 	    echo "Starting Emacs"

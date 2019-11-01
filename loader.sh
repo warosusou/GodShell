@@ -93,13 +93,8 @@ do
 	fi
 	break;
     elif [ "$DATA" = "build" ]; then
-	read -p "automation-mode ? [ y : n ] > " auto
 	cd ${SCRIPT_DIR}
-	if [ "${auto}" = "y" ]; then 
-	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" "auto"
-	else
-	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
-	fi
+	bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
 	cd $Working_DIR
     elif [ "$DATA" = "emacs" ]; then
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
