@@ -17,8 +17,8 @@ function JsonReader {
 }
 
 if [ $# -ne 2 -a $# -ne 3 ]; then
-    echo "error: Unexpected Parameter"
-    echo $#
+    printf "\e[31mError: Unexpected Parameter\e[m\n"
+    printf "\e[3;4mUsage:\e[m  ./loader.sh [directory] 授業回 課題番号\n"
     exit 1
 fi
 
