@@ -10,7 +10,51 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 
     status=${1:-\?}
     history=("" ${history[@]})
-    #local -A KeyCode=(["\x1b\x5b\x41"]="upArrow")
+    local -A KeyCode=(
+	[$'\x1b\x5b\x41']="upArrow"
+	[$'\x1b\x5b\x42']="downArrow"
+	[$'\x1b\x5b\x43']="rightArrow"
+	[$'\x1b\x5b\x44']="leftArrow"
+	[$'\x1b\x5b\x33\x7e']="Deletekey"
+	[$'\x7f']="BackSpacekey"
+	[$'\x09']="Tabkey"
+	[$'\xff']="Enterkey"
+    )
+
+    function search_key () {
+	local -A newCode
+	local -i depth=${1:-0}
+	IFS= read -s -n 1 _key
+	totalkey=${totalkey}${_key:-$'\xff'}
+	#printf "${totalkey}" | xxd
+	for mkey in "${!KeyCode[@]}";
+	do
+	    if [[ "${mkey}" == "${totalkey}"* ]]; then
+		newCode+=([$mkey]=${KeyCode[$mkey]})
+		if [[ "${mkey}" == "${totalkey}" ]]; then
+		    echo "${newCode[@]}"
+		    totalkey=
+		    return 0
+		fi
+	    fi
+	done
+	#echo -e "${!newCode[@]}" | xxd
+	#echo -e "${newCode[@]}" | xxd	    
+	#echo -e "${newCode[@]:-ban}" | xxd
+	if [ "${#newCode[@]}" -gt 0 ]; then
+	    search_key class+1
+	else
+	    if [ "$depth" -eq 0 ]; then
+		echo -e "$totalkey"
+	    else
+		echo "error"
+		totalkey=
+		return 1
+	    fi
+	fi
+	totalkey=
+	return 0
+    }
 
     function upArrow () {
 	if [ ${history_index} -lt $((${#history[@]} - 1)) ]; then
@@ -67,10 +111,11 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	fi
 	history_index=0
 	cchar=0
+	return 0
     }
 
     function Addchar () {
-	if [ $cchar -eq ${#BUFF} ]; then
+	if [ ${cchar:=0} -eq ${#BUFF} ]; then
 	    BUFF=${BUFF}${k}
 	elif [ $cchar -eq 0 ]; then
 	    BUFF=${k}${BUFF}
@@ -80,7 +125,7 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	((++cchar))
 	history[0]=${BUFF}
     }
-    
+
     BUFF=
     while :
     do
@@ -89,33 +134,42 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	else
 	    printf "$status > ${BUFF}\e[$((${#BUFF}-$cchar))D"
 	fi
-	IFS= read -s -n 1 k
-	case $k in
-	    $'\x1b' )
-		read -n 1 k
-		case $k in
-		    $'\x5b' )
-			read -n 1 k
-			case $k in
-			    $'\x33' )
-				read -n 1 k
-				case $k in
-				    $'\x7e' ) Deletekey ;;
-				esac
-				;;
-			    $'\x41' ) upArrow ;;
-                            $'\x42' ) downArrow ;;
-			    $'\x43' ) rightArrow ;;
-			    $'\x44' ) leftArrow ;;
-                        esac
-                        ;;
-                esac
-                ;;
-            $'\x7f' ) BackSpacekey ;;
-	    $'\x09' ) Tabkey ;;
-	    "" ) Enterkey; break; ;;
-	    * ) Addchar ;;
-	esac
+	#IFS= read -s -n 1 k
+	#case $k in
+	#    $'\x1b' )
+	#	read -n 1 k
+	#	case $k in
+	#	    $'\x5b' )
+	#		read -n 1 k
+	#		case $k in
+	#		    $'\x33' )
+	#			read -n 1 k
+	#			case $k in
+	#			    $'\x7e' ) Deletekey ;;
+	#			esac
+	#			;;
+	#		    $'\x41' ) upArrow ;;
+        #                    $'\x42' ) downArrow ;;
+	#		    $'\x43' ) rightArrow ;;
+	#		    $'\x44' ) leftArrow ;;
+        #                esac
+        #               ;;
+        #        esac
+        #        ;;
+        #    $'\x7f' ) BackSpacekey ;;
+	#    $'\x09' ) Tabkey ;;
+	#    "" ) Enterkey; break; ;;
+	#    * ) Addchar ;;
+	#esac
+	k=`search_key`
+	if [ ${#k} -eq 1 ]; then
+	    Addchar
+	else
+	    #echo "$k was called"
+	    $k
+	    if [ "$k" = "Enterkey" ]; then break; fi
+	fi
+	
 	printf "\e[100D\e[K"
     done
 }
