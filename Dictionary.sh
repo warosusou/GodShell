@@ -10,6 +10,7 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 
     status=${1:-\?}
     history=("" ${history[@]})
+    #local -A KeyCode=(["\x1b\x5b\x41"]="upArrow")
 
     function upArrow () {
 	if [ ${history_index} -lt $((${#history[@]} - 1)) ]; then
