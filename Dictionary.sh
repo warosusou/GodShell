@@ -1,3 +1,5 @@
+#!/bin/bash
+
 declare -a history
 declare -i history_index=0
 declare BUFF
@@ -36,6 +38,47 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	    ((++cchar))
 	fi
     }
+
+    function Deletekey () {
+	if [ $cchar -lt ${#BUFF} ]; then
+	    BUFF=`echo "${BUFF:0:$cchar}${BUFF:${cchar}+1}"`
+	fi
+    }
+
+    function BackSpacekey () {
+	if [ ${cchar} -gt 0 ]; then
+	    BUFF=`echo "${BUFF:0:${cchar}-1}${BUFF:$cchar}"`
+	    ((--cchar))
+	fi
+    }
+
+    function Tabkey () { #第一引数にTabを押したときに表示されるCommand(default=build)
+	BUFF=${1:-"build"}
+	cchar=${#BUFF}
+    }
+
+    function Enterkey () {
+	printf "\n"
+	if [ "${BUFF}" = "${history[1]}" ]; then
+	    history[0]=""
+	else
+	    history[0]=${BUFF}
+	fi
+	history_index=0
+	cchar=0
+    }
+
+    function Addchar () {
+	if [ $cchar -eq ${#BUFF} ]; then
+	    BUFF=${BUFF}${k}
+	elif [ $cchar -eq 0 ]; then
+	    BUFF=${k}${BUFF}
+	else
+	    BUFF=${BUFF:0:$cchar}${k}${BUFF:$cchar}
+	fi
+	((++cchar))
+	history[0]=${BUFF}
+    }
     
     BUFF=
     while :
@@ -46,43 +89,32 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	    printf "$status > ${BUFF}\e[$((${#BUFF}-$cchar))D"
 	fi
 	IFS= read -s -n 1 k
-	if [ "$k" = $'\x1b' ]; then
-	    read -n 1 k
-	    if [ "$k" = $'\x5b' ]; then
+	case $k in
+	    $'\x1b' )
 		read -n 1 k
 		case $k in
-		    $'\x41' ) upArrow ;;
-		    $'\x42' ) downArrow ;;
-		    $'\x43' ) rightArrow ;;
-		    $'\x44' ) leftArrow ;;
-		esac
-	    fi
-	elif [ "$k" = $'\x7f' ]; then
-	    if [ ${#BUFF} -gt 0 ]; then
-		BUFF=`echo "${BUFF:0:${#BUFF}-1}"`
-		((--cchar))
-	    fi
-	elif [ "$k" = ""  ]; then
-	    printf "\n"
-	    if [ "${BUFF}" = "${history[1]}" ]; then
-		history[0]=""
-	    else
-		history[0]=${BUFF}
-	    fi
-	    history_index=0
-	    cchar=0
-	    break;
-	else
-	    if [ $cchar -eq ${#BUFF} ]; then
-		BUFF=${BUFF}${k}
-	    elif [ $cchar -eq 0 ]; then
-		BUFF=${k}${BUFF}
-	    else
-		BUFF=${BUFF:0:$cchar}${k}${BUFF:$cchar}
-	    fi
-	    ((++cchar))
-	    history[0]=${BUFF}
-	fi
+		    $'\x5b' )
+			read -n 1 k
+			case $k in
+			    $'\x33' )
+				read -n 1 k
+				case $k in
+				    $'\x7e' ) Deletekey ;;
+				esac
+				;;
+			    $'\x41' ) upArrow ;;
+                            $'\x42' ) downArrow ;;
+			    $'\x43' ) rightArrow ;;
+			    $'\x44' ) leftArrow ;;
+                        esac
+                        ;;
+                esac
+                ;;
+            $'\x7f' ) BackSpacekey ;;
+	    $'\x09' ) Tabkey ;;
+	    "" ) Enterkey; break; ;;
+	    * ) Addchar ;;
+	esac
 	printf "\e[100D\e[K"
     done
 }

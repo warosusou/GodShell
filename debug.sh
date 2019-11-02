@@ -17,6 +17,11 @@ do
 		printf "\e[${i};${u}m${i}${u}だあああ\n\e[m"
 	    done
 	done
+    elif [ "$key" = "IFSxxd" ]; then
+        printf "$IFS" | xxd
+    elif [ "$key" = "typing" ]; then
+	read k
+	printf "$k" | xxd
     else
 	echo "$key" | xxd
     fi
