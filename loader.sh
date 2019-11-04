@@ -67,11 +67,13 @@ ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
 if [ $ALIVE -eq 0 ]; then
     echo "Starting Emacs"
     emacs $Question_NUM.c &
+    cd ${SCRIPT_DIR}
+    nice -n 19 bash watching.sh ${Question_NUM} &
 else
     echo "Emacs already started"
 fi
 
-
+trap 'printf "\n"; echo "${Question_NUM}.cが閉じられました。"; exit 1' 2
 
 while :
 do

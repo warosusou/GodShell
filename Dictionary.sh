@@ -4,7 +4,7 @@ declare -a history
 declare -i history_index=0
 declare BUFF
 
-function ReadInput () { #第一引数にstatusを第二引数にhistory機能有効化[y,n](未実装)を書く
+function ReadInput () { #第一引数にstatusを書く
 
     local -i cchar=0
 
@@ -165,7 +165,6 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	if [ ${#k} -eq 1 ]; then
 	    Addchar
 	else
-	    #echo "$k was called"
 	    $k
 	    if [ "$k" = "Enterkey" ]; then break; fi
 	fi
