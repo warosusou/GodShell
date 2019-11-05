@@ -1,12 +1,15 @@
 #!/bin/bash
 
-function loaderQuit () {
-    cd ${Working_DIR}
+function changeDate () (
+    cd $Working_DIR
     date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
     temp=`cat $Question_NUM.c | sed -e "1,4s/\(提出日\|[0-9]\{4\}年[0-9]\+月[0-9]\+日\)/${date[0]}${date[1]}${date[2]}/"`
     echo "$temp"  > $Question_NUM.c
-    echo "提出日が変更されました。 > ${date[0]}${date[1]}${date[2]}"
-    
+    echo "提出日を変更しました。 > ${date[0]}${date[1]}${date[2]}"
+)
+
+function loaderQuit () {
+    changeDate
     ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
     PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | tr -s ' ' | cut -d ' ' -f 2`
     if [ $ALIVE -eq 1 ]; then

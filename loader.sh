@@ -5,8 +5,11 @@
 Config_File='./config.json'
 
 if [ $# -ne 2 -a $# -ne 3 ]; then
-    printf "\e[31mError: Unexpected Parameter\e[m\n"
-    printf "\e[3;4mUsage:\e[m  ./loader.sh [directory] 授業回 課題番号\n"
+    printf "\e[31mエラー：予期していないパラメータ\e[m\n"
+    printf "\e[3;4m使用法：\e[m./loader.sh [directory] 授業回 課題番号\n"
+    printf "directoryは省略可能です。\n"
+    printf "  \e[1mdirectory\e[mは以下の形式で書いてください。\n"
+    printf "  >> ~/\"dir1\"/\"dir2\" ...\n"
     exit 1
 fi
 
@@ -72,24 +75,12 @@ cd $Working_DIR
 if [ ! -f ${Question_NUM}.c ]; then
     cd ${SCRIPT_DIR}
     $Template $Assign_NUM $Question_NUM "$StudentName" "$StudentNumber" $Working_DIR
-    cd $Working_DIR
-
-    date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
-    temp=`cat $Question_NUM.c | sed -e "1,4s/\(提出日\|[0-9]\{4\}年[0-9]\+月[0-9]\+日\)/${date[0]}${date[1]}${date[2]}/"`
-    echo "$temp"  > $Question_NUM.c
-    echo "提出日を変更しました。 > ${date[0]}${date[1]}${date[2]}"
+    changeDate
 else
     echo "File already exsists..."
 fi
 
-ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
-
-if [ $ALIVE -eq 0 ]; then
-    echo "Starting Emacs"
-    emacs $Question_NUM.c &
-else
-    echo "Emacs already started"
-fi
+startEmacs
 
 
 
