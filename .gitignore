@@ -5,3 +5,4 @@ template.sed
 template3.sh
 test.*
 config.json
+auto_git.sh
