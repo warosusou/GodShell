@@ -44,7 +44,6 @@ else
     DefaultPath=$(bash -c "echo $(JsonReader "$json" DefaultPath)")
     Template=$(JsonReader "$json" Template)
 fi
-echo $StudentName
 if [ $# -eq 2 ]; then
     Assign_NUM=$1
     Question_NUM=$2
