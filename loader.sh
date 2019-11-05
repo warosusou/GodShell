@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . Dictionary.sh
-. Json.sh
 
 Config_File='./config.json'
 
