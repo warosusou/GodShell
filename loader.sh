@@ -4,17 +4,23 @@
 
 function JsonReader {
     function ReadByKey {
-	local result=$(printf "$1" | grep "$2" | sed 's/^.+://' | tr -d '"')
+	local result=$(printf "$1" | grep $2 | tr -d '"' | sed 's/^.+: //' )
+	result=$(printf "$result" | sed "s/$2: //")
 	echo $result
     }
     local json=$(cat $1)
-    local formattedjson="$(printf $json | sed 's/^{\(.*\)}$/\1/' | tr ',' '\n')"
+    local formattedjson=$(cat $1 | sed 's/^{\(.*\)}$/\1/' | tr ',' '\n')
     local results=()
-    while [ "$#" -gt 1 ]; do
-	results+=`ReadByKey $formattedjson $2`
+    local index=0
+    while [ "$2" != "" ]
+    do
+	results[$index]+=`ReadByKey "$formattedjson" $2`
+	index=`expr $index + 1`
+	shift
     done
     echo ${results[@]}
 }
+Config_File='./config.json'
 
 if [ $# -ne 2 -a $# -ne 3 ]; then
     printf "\e[31mError: Unexpected Parameter\e[m\n"
@@ -22,14 +28,45 @@ if [ $# -ne 2 -a $# -ne 3 ]; then
     exit 1
 fi
 
-if [ -f config.json ]; then
-    json=$(cat config.json)
+if [ ! -f $Config_File ]; then
+    echo "名前を入力してください"
+    read  StudentName
+    echo "学籍番号を入力してください"
+    read  StudentNumber
+    echo "デフォルトのフォルダを選択してください"
+    read  DefaultPath
+    echo "テンプレートの種類を選択してください(1or2)"
+    read Template
+    DefaultPath=$(bash -c "echo $DefaultPath")
+    if [ ! ${DefaultPath: -1} = / ]; then
+	DefaultPath=${DefaultPath}/
+    fi
+    ConfigStudentName=$(echo "$StudentName" | sed 's/ /__/g')
+    if [ $Template = "1" ]; then
+	Template="./template1.sh"
+    else
+	Template="./template2.sh"
+    fi
+    cat <<EOS > $Config_File
+{
+ "Name": "${ConfigStudentName}"
+ "StudentNumber": "${StudentNumber}"
+ "DefaultPath": "${DefaultPath}"
+ "Template": "${Template}"
+}
+EOS
+else
+    declare -a jsons=($(JsonReader $Config_File Name StudentNumber DefaultPath Template))
+    StudentName=$(echo "${jsons[0]}" | sed 's/__/ /g')
+    StudentNumber="${jsons[1]}"
+    DefaultPath=$(bash -c "echo ${jsons[2]}")
+    Template="${jsons[3]}"
 fi
 
 if [ $# -eq 2 ]; then
     Assign_NUM=$1
     Question_NUM=$2
-    Target_DIR=~/eip2/
+    Target_DIR=$DefaultPath
 fi
 
 if [ $# -eq 3 ]; then
@@ -39,6 +76,9 @@ if [ $# -eq 3 ]; then
     if [ ! ${Target_DIR: -1} = / ]; then
 	Target_DIR=${Target_DIR}/
     fi
+fi
+if [ ! -d $Target_DIR ]; then
+    mkdir $Target_DIR
 fi
 
 Working_DIR=$Target_DIR$Assign_NUM
@@ -51,7 +91,7 @@ fi
 cd $Working_DIR
 if [ ! -f ${Question_NUM}.c ]; then
     cd ${SCRIPT_DIR}
-    ./template.sh $Assign_NUM $Question_NUM $Working_DIR
+    $Template $Assign_NUM $Question_NUM "$StudentName" "$StudentNumber" $Working_DIR
     cd $Working_DIR
 
     date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
