@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. Dictionary.sh
+
 function JsonReader {
     function ReadByKey {
 	local result=$(printf "$1" | grep $2 | tr -d '"' | sed 's/^.+: //' )
@@ -21,8 +23,8 @@ function JsonReader {
 Config_File='./config.json'
 
 if [ $# -ne 2 -a $# -ne 3 ]; then
-    echo "error: Unexpected Parameter"
-    echo $#
+    printf "\e[31mError: Unexpected Parameter\e[m\n"
+    printf "\e[3;4mUsage:\e[m  ./loader.sh [directory] 授業回 課題番号\n"
     exit 1
 fi
 
@@ -113,8 +115,9 @@ fi
 
 while :
 do
-    read -p "loader > " DATA
+    ReadInput loader; DATA=$BUFF
     if [ "$DATA" = "quit"  ];then
+	cd ${Working_DIR}
 	date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
 	temp=`cat $Question_NUM.c | sed -e "1,4s/\(提出日\|[0-9]\{4\}年[0-9]\+月[0-9]\+日\)/${date[0]}${date[1]}${date[2]}/"`
 	echo "$temp"  > $Question_NUM.c
@@ -131,12 +134,7 @@ do
 	break;
     elif [ "$DATA" = "build" ]; then
 	cd ${SCRIPT_DIR}
-	read -p "submit mode? y / n( else ) > " MODE
-	if [ $MODE = "y" ]; then
-	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" submit
-	else
-	    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
-	fi
+	bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
 	cd $Working_DIR
     elif [ "$DATA" = "emacs" ]; then
 	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
@@ -148,26 +146,8 @@ do
 	    echo "Emacs already started"
 	fi
     elif [ "$DATA" = "debug" ]; then
-	echo "-----debug start-----"
-	# ここに試したいコマンドを書く
-	while :
-	do
-	read -p "debug > " key
-	if [ "$key" = "quit" ]; then
-	    break;
-	elif [ "$key" = "color" ]; then
-	    for i in `seq 30 37`
-	    do
-		for u in `seq 40 47`
-		do
-		    printf "\e[${i};${u}m${i}${u}だあああ\n\e[m"
-		done
-	    done
-	else
-	  echo "$key" | hexdump 
-	fi
-	done
-	echo "-----debug end-----"
+	cd ${SCRIPT_DIR}
+	bash debug.sh
     else
 	echo "Unknown Command"
     fi
