@@ -1,25 +1,8 @@
 #!/bin/bash
 
 . Dictionary.sh
+. Json.sh
 
-function JsonReader {
-    function ReadByKey {
-	local result=$(printf "$1" | grep $2 | tr -d '"' | sed 's/^.+: //' )
-	result=$(printf "$result" | sed "s/$2: //")
-	echo $result
-    }
-    local json=$(cat $1)
-    local formattedjson=$(cat $1 | sed 's/^{\(.*\)}$/\1/' | tr ',' '\n')
-    local results=()
-    local index=0
-    while [ "$2" != "" ]
-    do
-	results[$index]+=`ReadByKey "$formattedjson" $2`
-	index=`expr $index + 1`
-	shift
-    done
-    echo ${results[@]}
-}
 Config_File='./config.json'
 
 if [ $# -ne 2 -a $# -ne 3 ]; then
@@ -41,7 +24,6 @@ if [ ! -f $Config_File ]; then
     if [ ! ${DefaultPath: -1} = / ]; then
 	DefaultPath=${DefaultPath}/
     fi
-    ConfigStudentName=$(echo "$StudentName" | sed 's/ /__/g')
     if [ $Template = "1" ]; then
 	Template="./template1.sh"
     else
@@ -49,20 +31,19 @@ if [ ! -f $Config_File ]; then
     fi
     cat <<EOS > $Config_File
 {
- "Name": "${ConfigStudentName}"
+ "Name": "${StudentName}"
  "StudentNumber": "${StudentNumber}"
  "DefaultPath": "${DefaultPath}"
  "Template": "${Template}"
 }
 EOS
 else
-    declare -a jsons=($(JsonReader $Config_File Name StudentNumber DefaultPath Template))
-    StudentName=$(echo "${jsons[0]}" | sed 's/__/ /g')
-    StudentNumber="${jsons[1]}"
-    DefaultPath=$(bash -c "echo ${jsons[2]}")
-    Template="${jsons[3]}"
+    json=$(cat $Config_File)
+    StudentName=$(JsonReader "$json" Name)
+    StudentNumber=$(JsonReader "$json" StudentNumber)
+    DefaultPath=$(bash -c "echo $(JsonReader "$json" DefaultPath)")
+    Template=$(JsonReader "$json" Template)
 fi
-
 if [ $# -eq 2 ]; then
     Assign_NUM=$1
     Question_NUM=$2
