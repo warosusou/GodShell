@@ -19,7 +19,7 @@ if [ ! -f $Config_File ]; then
     echo "学籍番号を入力してください"
     read  StudentNumber
     echo "デフォルトのフォルダを選択してください"
-    read  DefaultPath
+    ReadInput -a "~/[directory1]/[directory2]...  :Input should be in this format" Folder; DefaultPath=$BUFF
     echo "テンプレートの種類を選択してください(1or2)"
     read Template
     DefaultPath=$(bash -c "echo $DefaultPath")
@@ -83,7 +83,6 @@ fi
 startEmacs
 
 
-
 while :
 do
     ReadInput loader; DATA=$BUFF
@@ -101,5 +100,4 @@ do
 	* )
 	    echo "Unknown Command"
     esac
-    
 done

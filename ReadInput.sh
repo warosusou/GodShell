@@ -5,11 +5,30 @@ declare -i history_index=0
 declare BUFF
 
 function ReadInput () { #第一引数にstatusを第二引数にhistory機能有効化[y,n](未実装)を書く
-
-    local -i cchar=0
-
-    status=${1:-\?}
-    history=("" ${history[@]})
+    function getOption () {
+	while [ $# -gt 0 ]
+	do
+	    case "$1" in
+		-* )
+		    option+=("${1:1}")
+		    if isPartlyMatch "$1" a; then
+			shift
+			if [ "${1:0:1}" = "-" ]; then
+			    echo "Error to function getOption()"
+			    echo "Syntax Error"
+			    exit 1
+			else
+			    inp_assist="$1"
+			fi
+		    fi
+		;;
+		* )
+		    non_option+=("$1")
+		;;
+	    esac
+	    shift
+	done
+    }
 
     function upArrow () {
 	if [ ${history_index} -lt $((${#history[@]} - 1)) ]; then
@@ -79,12 +98,26 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	((++cchar))
 	history[0]=${BUFF}
     }
+
+    local -i cchar=0
+
+    local -a option
+    local -a non_option
+    getOption "$@"
+    local status="${non_option[0]:-\?}"
+    local history=("" ${history[@]})
     
+    if [ ${#option[@]} -eq 0 ]; then option+=("@"); fi
     BUFF=
+    
     while :
     do
 	if [ $((${#BUFF}-$cchar)) -eq 0 ]; then
-	    printf "$status > ${BUFF}"
+	    if isPartlyMatch a ${option[@]} && [ ${#BUFF} -eq 0 ]; then
+		printf "$status > \e[3;38;5;245m${inp_assist}\e[m\e[${#inp_assist}D"
+	    else
+		printf "$status > ${BUFF}"
+	    fi
 	else
 	    printf "$status > ${BUFF}\e[$((${#BUFF}-$cchar))D"
 	fi
