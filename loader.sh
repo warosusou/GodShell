@@ -71,17 +71,20 @@ SCRIPT_DIR=$(cd $(dirname $0); pwd)
 if [ ! -d $Working_DIR ]; then
     mkdir $Working_DIR
 fi
-cd $Working_DIR
-if [ ! -f ${Question_NUM}.c ]; then
-    cd ${SCRIPT_DIR}
-    $Template $Assign_NUM $Question_NUM "$StudentName" "$StudentNumber" $Working_DIR
-    changeDate
-else
-    echo "File already exsists..."
-fi
 
-startEmacs
-
+(
+    cd $Working_DIR
+    if [ ! -f ${Question_NUM}.c ]; then
+	(
+	    cd ${SCRIPT_DIR}
+	    $Template $Assign_NUM $Question_NUM "$StudentName" "$StudentNumber" $Working_DIR
+	    changeDate
+	)
+    else
+	echo "File already exsists..."
+    fi
+    startEmacs
+)
 
 while :
 do

@@ -5,6 +5,7 @@ declare -i history_index=0
 declare BUFF
 
 function ReadInput () { #第一引数にstatusを第二引数にhistory機能有効化[y,n](未実装)を書く
+    
     function getOption () {
 	while [ $# -gt 0 ]
 	do
@@ -78,10 +79,8 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 
     function Enterkey () {
 	printf "\n"
-	if [ "${BUFF}" = "${history[1]}" ]; then
-	    history[0]=""
-	else
-	    history[0]=${BUFF}
+	if [ "${BUFF}" != "${history[1]}" ]; then
+	    save_history "$BUFF"
 	fi
 	history_index=0
 	cchar=0
@@ -104,8 +103,15 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
     local -a option
     local -a non_option
     getOption "$@"
+    local -a history=("")
+    if [ -s .history ]; then
+	while read LINE
+	do
+	    history+=("$LINE")
+	done <.history
+    fi
+    echo "${#history[@]}"
     local status="${non_option[0]:-\?}"
-    local history=("" ${history[@]})
     
     if [ ${#option[@]} -eq 0 ]; then option+=("@"); fi
     BUFF=
