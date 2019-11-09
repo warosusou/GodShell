@@ -20,13 +20,13 @@ function loaderQuit () {
     fi
 }
 
-function startBuild () {
+function startBuild () (
     cd ${SCRIPT_DIR}
     bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}"
-    cd $Working_DIR
-}
+)
 
-function startEmacs () {
+
+function startEmacs () (
     cd $Working_DIR
     ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${Question_NUM}.c | wc -l`
     if [ $ALIVE -eq 0 ]; then
@@ -36,4 +36,4 @@ function startEmacs () {
     else
 	echo "Emacs already started"
     fi
-}
+)

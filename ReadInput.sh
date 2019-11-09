@@ -110,7 +110,6 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 	    history+=("$LINE")
 	done <.history
     fi
-    echo "${#history[@]}"
     local status="${non_option[0]:-\?}"
     
     if [ ${#option[@]} -eq 0 ]; then option+=("@"); fi
