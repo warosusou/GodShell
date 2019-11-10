@@ -37,3 +37,7 @@ function startEmacs () (
 	echo "Emacs already started"
     fi
 )
+
+function otherCommand () {
+    echo "Unknown Command."
+}

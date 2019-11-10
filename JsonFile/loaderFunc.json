@@ -1,0 +1,6 @@
+{
+ "quit": "loaderQuit",
+ "build": "startBuild",
+ "emacs": "startEmacs",
+ "debug": "bash debug.sh"
+}

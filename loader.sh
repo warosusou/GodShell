@@ -2,7 +2,8 @@
 
 . Dictionary.sh
 
-Config_File='./config.json'
+Config_File='./JsonFile/config.json'
+loaderFunction_File='./JsonFile/loaderFunc.json'
 
 if [ $# -ne 2 -a $# -ne 3 ]; then
     printf "\e[31mエラー：予期していないパラメータ\e[m\n"
@@ -89,18 +90,23 @@ fi
 while :
 do
     ReadInput loader; DATA=$BUFF
-    case $DATA in
-	"quit" )
-	    loaderQuit
-	    break;;
-	"build" )
-	    startBuild;;
-	"emacs" )
-	    startEmacs;;
-	"debug" )
-	    cd ${SCRIPT_DIR}
-	    bash debug.sh;;
-	* )
-	    echo "Unknown Command"
-    esac
+#    case $DATA in
+#	"quit" )
+#	    loaderQuit
+#	    break;;
+#	"build" )
+#	    startBuild;;
+#	"emacs" )
+#	    startEmacs;;
+#	"debug" )
+#	    bash debug.sh;;
+#	* )
+#	    otherCommand
+#   esac
+    json=$(cat $loaderFunction_File)
+    if [ "$DATA" != "" ]; then
+	Command=$(JsonReader "$json" "$DATA")
+	${Command:-"otherCommand"}
+	if [ "$Command" = "loaderQuit" ]; then break; fi
+    fi
 done
