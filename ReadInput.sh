@@ -79,7 +79,7 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
 
     function Enterkey () {
 	printf "\n"
-	BUFF=`printf "$BUFF" | sed "s/\s*$//"`
+	BUFF=`printf -- "$BUFF" | sed "s/\s*$//"`
 	if [ "${BUFF}" != "${history[1]}" ]; then
 	    save_history "$BUFF"
 	fi
