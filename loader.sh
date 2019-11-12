@@ -32,14 +32,12 @@ if [ ! -f $Config_File ]; then
     else
 	Template="./template2.sh"
     fi
-    cat <<EOS > $Config_File
-{
- "Name": "${StudentName}"
- "StudentNumber": "${StudentNumber}"
- "DefaultPath": "${DefaultPath}"
- "Template": "${Template}"
-}
-EOS
+    json=""
+    json=$(JsonWriter "$json" Name "$StudentName")
+    json=$(JsonWriter "$json" StudentNumber "$StudentNumber")
+    json=$(JsonWriter "$json" DefaultPath "$DefaultPath")
+    json=$(JsonWriter "$json" Template "$Template")
+    printf "$json" > $Config_File
 else
     json=$(cat $Config_File)
     StudentName=$(JsonReader "$json" Name)
