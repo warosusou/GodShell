@@ -21,3 +21,14 @@ function isPartlyMatch () {
     done
     return 1
 }
+
+function arrayFilter () { #第一変数にinputを、第二変数に配列を置く。
+    local filter="$1"
+    local -a array=("${@:2}")
+    for arr in ${array[@]}
+    do
+	if [[ $arr =~ $filter ]]; then
+	    echo $arr
+	fi
+    done
+}
