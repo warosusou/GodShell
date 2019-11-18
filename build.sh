@@ -23,7 +23,19 @@ fi
 
 read -p "automation-mode ? [ y : n ] > " auto
 if [ "${auto}" = "y" ]; then
-    echo "Input Planning Number : \"ban\" will be ban."
+    maxInputLength=-1
+    echo "Input the length of inputs(Invalid or empty value will be igonored)"
+    read -p "> " maxInputLength
+    maxInputLength=$(printf "$maxInputLength" | tr -s ' ' | tr -s '　')
+    if [ "$maxInputLength" = "" ]; then
+	maxInputLength="EMPTY"
+    fi
+    expr $maxInputLength + 1 > /dev/null 2>&1
+    IsInt=$?
+    if [ $IsInt -ge 2 ]; then
+	maxInputLength=-1
+	echo "Input Planning Number : \"ban\" will be ban."
+    fi
     while :
     do
 	INPUT_BUF=()
@@ -33,6 +45,9 @@ if [ "${auto}" = "y" ]; then
 	fi
 	INPUT[${index}]="${INPUT_BUF[*]}"
 	index=`expr $index + 1`
+	if [ ! $maxInputLength = -1 ] && [ ${index} -ge $maxInputLength ]; then
+	  break;  
+	fi
     done
 fi
 
