@@ -41,3 +41,8 @@ function startEmacs () (
 function otherCommand () {
     echo "Unknown Command."
 }
+
+function changeConfig () {
+    ls JsonFile
+    
+}
