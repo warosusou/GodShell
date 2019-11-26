@@ -38,20 +38,10 @@ function Disassembler () {
     do
 	local word="${String:i:len}"
 	local next_escape="$(printf "${String:$i+$len:1}" | sed 's#\([\\|\*|\+|\.|\?|\{|\}|\(|\)|\/|\^|$|\|]\)#\\\1#g' | sed 's#\[#\\\[#g' | sed 's#\]#\\\]#g')"
-	((++len))
-	if [ "$next_escape" = "\(" ]; then
-	    while [ "${next_escape}" != "\)" ];
-	    do
-		word=${word}${next_escape}
-		if [ $(expr $i + $len) -gt ${#String} ]; then return 1; fi
-		local next_escape="$(printf "${String:$i+$len:1}" | sed 's#\([\\|\*|\+|\.|\?|\{|\}|\(|\)|\/|\^|$|\|]\)#\\\1#g' | sed 's#\[#\\\[#g' | sed 's#\]#\\\]#g')"
-		((++len))
-	    done
-	else
-	    if [ "$next_escape" != " " -a $(expr $i + $len) -lt ${#String} ]; then
-		((++len))
-		continue
-	    fi
+	
+	if [ "$next_escape" != " " -a $(expr $i + $len) -lt ${#String} ]; then
+	    ((++len))
+	    continue
 	fi
 	
 	printf "${word}@"
@@ -61,15 +51,45 @@ function Disassembler () {
     printf "\n"
 }
 
+function rand () {
+    if [ $# -eq 3 ]; then
+	local -i row=1
+	local -i num=$1
+	local -i min=$2
+	local -i max=$3
+    elif [ $# -eq 4 ]; then
+	local -i row=$1
+	if [ $row -lt 1 ]; then return; fi
+	local -i num=$2
+	local -i min=$3
+	local -i max=$4
+    else
+	return echo "BAN";
+    fi
+
+    if [ $num -lt 1 ]; then return; fi
+    if [ $min -gt $max ]; then return; fi
+
+    local -i i
+
+    for i in `seq 1 $row`; do
+	for u in `seq 1 $num`; do
+	    echo $(($min + $RANDOM % ($max - $min + 1))) 
+	done
+	printf "\\\n"
+    done
+}
+
 function Analysis () {
-    local -a arr
-    local str="$(printf "$1" | tr -s ' ')"
-    local IFSbuff="$IFS"
-    IFS="@"
-    #arr=($(Disassembler "$str"))
-    Disassembler "$str"
-    IFS="$IFSbuff"
-    echo "${arr[@]}"
+    local arr=$(eval echo "$@")
+   # local str="$(printf "$1" | tr -s ' ')"
+   # local IFSbuff="$IFS"
+   # IFS="@"
+   # arr=($(Disassembler "$str"))
+   # #Disassembler "$str"
+   # IFS="$IFSbuff"
+    arr=$(printf "$arr" | sed -e 's/\n */\n/')
+    echo -e "${arr}"
 }
 
 Config_File='./JsonFile/config.json'
@@ -82,9 +102,8 @@ json=$(cat $Config_File)
 
 #arrayFilter "ba" "bash ban bil /a -a ./* *"
 
-str="rand(3,3,3) 3 3"
-
-arr=($(Analysis "$str"))
-
-echo "${#arr[@]}"
+str='`rand 2 5 0 100`   3  3'
+arr=$(printf "$str" | tr -s ' ' | eval echo)
+arr=$(printf "$arr" | sed -e 's/\\n */\\n/')
+echo -e "${arr[@]}"
 echo "${arr[@]}"
