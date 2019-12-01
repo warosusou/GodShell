@@ -9,8 +9,10 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
-cd $3
-gcc -Wall $2.c -o $2.out
+(
+    cd $3
+    gcc -Wall $2.c -o $2.out
+)
 cstatus=$?
 
 echo "-----Compile end-----"
@@ -33,6 +35,8 @@ if [ "${auto}" = "y" ]; then
 	    break;
 	fi
 
+	declare -a command=()
+
 	while [ -n "$INPUT_BUF" ]; do
 	    if [ "${INPUT_BUF:0:1}" = "\`" ]; then
 		command+=("$(printf "$INPUT_BUF" | sed -E "s/^(\`[^\`]*\`).*/\1/")")
@@ -43,18 +47,28 @@ if [ "${auto}" = "y" ]; then
 	    fi
 	    INPUT_BUF=${INPUT_BUF## }
 	done
-
+	isFirstcmd=1
 	for cmd in "${command[@]}"
 	do
-	    index=$((${#INPUT[@]}-1))
+	    if [ $isFirstcmd -eq 1 ]; then
+		index=${#INPUT[@]}
+		isFirstcmd=0
+	    else
+		index=$((${#INPUT[@]}-1))
+	    fi
 	    if [ $index -lt 0 ]; then index=0; fi
 	    if [ "${cmd:0:1}" = "\`" ]; then
-		while read line || [ -n "${line}" ]
-		do
-		    INPUT[$index]+="$line"
-		    ((index++))
-		done < ${dumpdir}/.randdmp
-		INPUT[$(($index-1))]+=" "
+		success=$(eval echo $cmd)
+		if [ "$success" != "BAN" ]; then
+		    while read line || [ -n "${line}" ]
+		    do
+			INPUT[$index]+="$line"
+			((index++))
+		    done < ${dumpdir}/.randdmp
+		    INPUT[$(($index-1))]+=" "
+		else
+		    echo "\`rand\`の文法が間違っています"
+		fi
 	    else
 		INPUT[$index]+="$cmd "
 	    fi	
@@ -72,34 +86,38 @@ fi
 #EOF
 #)
 
-if [ "${auto}" = "y" ]; then
-    RESULT=`echo ${INPUT[@]} | ./$2.out`
-
-    echo "$RESULT"
+(
+    cd $3
     
-    echo "-----Program end-----"
-    
-    echo "$2.txt was saved as new file."
-    if [ ${#INPUT[@]} -eq 0 ]; then
-	echo "${RESULT}" > $2.txt
-    else
-	printf "%s\n" "${INPUT[@]}" > $2.txt
-	printf "\n" >> $2.txt
-	echo "${RESULT}" >> $2.txt
-    fi
-else
-    ./$2.out
-    echo "-----Program end-----"
-    read -p "Need Emacs ? [ y : n ] > " NeedEmacs
-    if [ "${NeedEmacs}" = "y" ]; then
-	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep $2.txt | wc -l`
-	if [ $ALIVE -eq 0 ]; then
-	    echo "Starting Emacs"
-	    emacs $2.txt &
+    if [ "${auto}" = "y" ]; then
+	RESULT=`echo ${INPUT[@]} | ./$2.out`
+	
+	echo "$RESULT"
+	
+	echo "-----Program end-----"
+	
+	echo "$2.txt was saved as new file."
+	if [ ${#INPUT[@]} -eq 0 ]; then
+	    echo "${RESULT}" > $2.txt
 	else
-	    echo "Emacs already started"
+	    printf "%s\n" "${INPUT[@]}" > $2.txt
+	    printf "\n" >> $2.txt
+	    echo "${RESULT}" >> $2.txt
+	fi
+    else
+	./$2.out
+	echo "-----Program end-----"
+	read -p "Need Emacs ? [ y : n ] > " NeedEmacs
+	if [ "${NeedEmacs}" = "y" ]; then
+	    ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep $2.txt | wc -l`
+	    if [ $ALIVE -eq 0 ]; then
+		echo "Starting Emacs"
+		emacs $2.txt &
+	    else
+		echo "Emacs already started"
+	    fi
 	fi
     fi
-fi
+)
 
 exit 0

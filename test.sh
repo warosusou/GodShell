@@ -58,15 +58,20 @@ function Disassembler () {
 function rand () {
 
     local dumpfile="${dumpdir}/.randdmp"
-    
-    if [ $# -eq 3 ]; then
+
+    if [ $# -eq 2 ]; then
+	local -i row=1
+	local -i num=$1
+	local -i min=1
+	local -i max=$2
+    elif [ $# -eq 3 ]; then
 	local -i row=1
 	local -i num=$1
 	local -i min=$2
 	local -i max=$3
     elif [ $# -eq 4 ]; then
 	local -i row=$1
-	if [ $row -lt 1 ]; then return; fi
+	if [ $row -lt 1 ]; then echo "BAN"; return 1; fi
 	local -i num=$2
 	local -i min=$3
 	local -i max=$4
@@ -74,8 +79,8 @@ function rand () {
 	echo "BAN"; return 1
     fi
 
-    if [ $num -lt 1 ]; then return; fi
-    if [ $min -gt $max ]; then return; fi
+    if [ $num -lt 1 ]; then echo "BAN"; return; fi
+    if [ $min -gt $max ]; then echo "BAN"; return; fi
 
     local -i i
 
@@ -143,12 +148,17 @@ do
     declare -i count=$((${#result[@]}-1))
     if [ $count -lt 0 ]; then count=0; fi
     if [ "${cmd:0:1}" = "\`" ]; then
-	while read line || [ -n "${line}" ]
-	do
-	    result[$count]+="$line"
-	    ((count++))
-	done < ${dumpdir}/.randdmp
-	result[$(($count-1))]+=" "
+	success=$(eval echo $cmd)
+	if [ "$success" != "BAN" ]; then
+	    while read line || [ -n "${line}" ]
+	    do
+		result[$count]+="$line"
+		((count++))
+	    done < ${dumpdir}/.randdmp
+	    result[$(($count-1))]+=" "
+	else
+	    echo "\`rand\`の文法が間違っています"
+	fi
     else
 	result[$count]+="$cmd "
     fi	
