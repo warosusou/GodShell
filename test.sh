@@ -143,11 +143,6 @@ do
     declare -i count=$((${#result[@]}-1))
     if [ $count -lt 0 ]; then count=0; fi
     if [ "${cmd:0:1}" = "\`" ]; then
-	eval echo "$cmd" > /dev/null
-	#IFSbuff="$IFS"
-	#IFS=$'\n'
-	#result+=($(cat ./.randdmp))
-	#IFS="$IFSbuff"
 	while read line || [ -n "${line}" ]
 	do
 	    result[$count]+="$line"

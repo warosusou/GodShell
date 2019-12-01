@@ -1,7 +1,8 @@
 #!/bin/bash
 
+. Dictionary.sh
+
 INPUT=()
-index=0
 
 if [ $# -ne 3 ]; then
     echo "Error: Not Enough Parameter "
@@ -26,13 +27,43 @@ if [ "${auto}" = "y" ]; then
     echo "Input Planning Number : \"ban\" will be ban."
     while :
     do
-	INPUT_BUF=()
-	read -p "> " -a INPUT_BUF
-	if [ ${INPUT_BUF[0]} = "ban" -a ${#INPUT_BUF[@]} -eq 1 ]; then
+	#read -p "> " -a INPUT_BUF
+	ReadInput "build"; INPUT_BUF="$BUFF"
+	if [ "${INPUT_BUF}" = "ban" ]; then
 	    break;
 	fi
-	INPUT[${index}]="${INPUT_BUF[*]}"
-	index=`expr $index + 1`
+
+	while [ -n "$INPUT_BUF" ]; do
+	    if [ "${INPUT_BUF:0:1}" = "\`" ]; then
+		command+=("$(printf "$INPUT_BUF" | sed -E "s/^(\`[^\`]*\`).*/\1/")")
+		INPUT_BUF=$(printf "$INPUT_BUF" | sed -E "s/^(\`[^\`]*\`)//" )
+	    else
+		command+=("$(printf "$INPUT_BUF" | sed -E "s/^(^[^ ]*).*/\1/")")
+		INPUT_BUF=$(printf "$INPUT_BUF" | sed -E "s/^[^ ]*//")
+	    fi
+	    INPUT_BUF=${INPUT_BUF## }
+	done
+
+	for cmd in "${command[@]}"
+	do
+	    index=$((${#INPUT[@]}-1))
+	    if [ $index -lt 0 ]; then index=0; fi
+	    if [ "${cmd:0:1}" = "\`" ]; then
+		while read line || [ -n "${line}" ]
+		do
+		    INPUT[$index]+="$line"
+		    ((index++))
+		done < ${dumpdir}/.randdmp
+		INPUT[$(($index-1))]+=" "
+	    else
+		INPUT[$index]+="$cmd "
+	    fi	
+	done
+	((index++))
+    done
+    for i in $(seq 0 $((${#INPUT[@]}-1)))
+    do
+	INPUT[$i]=${INPUT[$i]%% }
     done
 fi
 
