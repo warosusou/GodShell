@@ -39,11 +39,11 @@ if [ "${auto}" = "y" ]; then
 
 	while [ -n "$INPUT_BUF" ]; do
 	    if [ "${INPUT_BUF:0:1}" = "\`" ]; then
-		command+=("$(printf "$INPUT_BUF" | sed -E "s/^(\`[^\`]*\`).*/\1/")")
-		INPUT_BUF=$(printf "$INPUT_BUF" | sed -E "s/^(\`[^\`]*\`)//" )
+		command+=("$(printf "$INPUT_BUF" | sed -r "s/^(\`[^\`]*\`).*/\1/")")
+		INPUT_BUF=$(printf "$INPUT_BUF" | sed -r "s/^(\`[^\`]*\`)//" )
 	    else
-		command+=("$(printf "$INPUT_BUF" | sed -E "s/^(^[^ ]*).*/\1/")")
-		INPUT_BUF=$(printf "$INPUT_BUF" | sed -E "s/^[^ ]*//")
+		command+=("$(printf "$INPUT_BUF" | sed -r "s/^(^[^ ]*).*/\1/")")
+		INPUT_BUF=$(printf "$INPUT_BUF" | sed -r "s/^[^ ]*//")
 	    fi
 	    INPUT_BUF=${INPUT_BUF## }
 	done
