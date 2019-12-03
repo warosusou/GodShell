@@ -1,5 +1,9 @@
 #!/bin/bash
 
+. Dictionary.sh
+
+dumpdir="./.dmpfile"
+
 function arrayFilter () {
     local filter="$1"
     local -a array=("${@:2}")
@@ -52,32 +56,50 @@ function Disassembler () {
 }
 
 function rand () {
-    if [ $# -eq 3 ]; then
+
+    local dumpfile="${dumpdir}/.randdmp"
+
+    if [ $# -eq 2 ]; then
+	local -i row=1
+	local -i num=$1
+	local -i min=1
+	local -i max=$2
+    elif [ $# -eq 3 ]; then
 	local -i row=1
 	local -i num=$1
 	local -i min=$2
 	local -i max=$3
     elif [ $# -eq 4 ]; then
 	local -i row=$1
-	if [ $row -lt 1 ]; then return; fi
+	if [ $row -lt 1 ]; then echo "BAN"; return 1; fi
 	local -i num=$2
 	local -i min=$3
 	local -i max=$4
     else
-	return echo "BAN";
+	echo "BAN"; return 1
     fi
 
-    if [ $num -lt 1 ]; then return; fi
-    if [ $min -gt $max ]; then return; fi
+    if [ $num -lt 1 ]; then echo "BAN"; return; fi
+    if [ $min -gt $max ]; then echo "BAN"; return; fi
 
     local -i i
 
-    for i in `seq 1 $row`; do
-	for u in `seq 1 $num`; do
-	    echo $(($min + $RANDOM % ($max - $min + 1))) 
+    if [ ! -d "$dumpdir" ]; then
+	mkdir "$dumpdir"
+    fi
+    
+    if [ -f "$dumpfile" ]; then
+	rm "$dumpfile"
+    fi
+
+    for i in `seq $row`; do
+	for u in `seq $num`; do
+	    printf "%d" $(($min + $RANDOM % ($max - $min + 1))) >> $dumpfile
+	    if [ $u -ne $num ]; then printf " "  >> $dumpfile; fi
 	done
-	printf "\\\n"
+	if [ $i -ne $row ]; then printf "\n" >> $dumpfile; fi
     done
+    cat $dumpfile
 }
 
 function Analysis () {
@@ -88,13 +110,13 @@ function Analysis () {
    # arr=($(Disassembler "$str"))
    # #Disassembler "$str"
    # IFS="$IFSbuff"
-    arr=$(printf "$arr" | sed -e 's/\n */\n/')
+    arr=$(printf "$arr" | sed -e 's/\n */\\n/')
     echo -e "${arr}"
 }
 
 Config_File='./JsonFile/config.json'
 
-json=$(cat $Config_File)
+#json=$(cat $Config_File)
 
 #echo "$json"
 
@@ -102,8 +124,55 @@ json=$(cat $Config_File)
 
 #arrayFilter "ba" "bash ban bil /a -a ./* *"
 
-str='`rand 2 5 0 100`   3  3'
-arr=$(printf "$str" | tr -s ' ' | eval echo)
-arr=$(printf "$arr" | sed -e 's/\\n */\\n/')
-echo -e "${arr[@]}"
-echo "${arr[@]}"
+declare -a command
+
+ReadInput "BAN?"; str="$BUFF"
+
+#str='`rand 2 5 0 9` 000 00 `rand 2 2 0 9` `rand 2 2 0 9`'
+
+while [ -n "$str" ]; do
+    if [ "${str:0:1}" = "\`" ]; then
+	command+=("$(printf "$str" | sed -E "s/^(\`[^\`]*\`).*/\1/")")
+	str=$(printf "$str" | sed -E "s/^(\`[^\`]*\`)//" )
+    else
+	command+=("$(printf "$str" | sed -E "s/^(^[^ ]*).*/\1/")")
+	str=$(printf "$str" | sed -E "s/^[^ ]*//")
+    fi
+    str=${str## }
+done
+
+declare -a result=()
+
+for cmd in "${command[@]}"
+do
+    declare -i count=$((${#result[@]}-1))
+    if [ $count -lt 0 ]; then count=0; fi
+    if [ "${cmd:0:1}" = "\`" ]; then
+	success=$(eval echo $cmd)
+	if [ "$success" != "BAN" ]; then
+	    while read line || [ -n "${line}" ]
+	    do
+		result[$count]+="$line"
+		((count++))
+	    done < ${dumpdir}/.randdmp
+	    result[$(($count-1))]+=" "
+	else
+	    echo "\`rand\`の文法が間違っています"
+	fi
+    else
+	result[$count]+="$cmd "
+    fi	
+done
+
+for i in $(seq 0 $((${#result[@]}-1)))
+do
+    result[$i]=${result[$i]%% }
+done
+
+for i in "${result[@]}"
+do
+    echo "$i"
+done
+
+
+#rand 2 5 0 9
