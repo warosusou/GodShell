@@ -11,7 +11,7 @@ fi
 
 (
     cd $3
-    gcc -Wall $2.c -o $2.out
+    gcc -Wall -lm $2.c -o $2.out
 )
 cstatus=$?
 
@@ -39,11 +39,11 @@ if [ "${auto}" = "y" ]; then
 
 	while [ -n "$INPUT_BUF" ]; do
 	    if [ "${INPUT_BUF:0:1}" = "\`" ]; then
-		command+=("$(printf "$INPUT_BUF" | sed -r "s/^(\`[^\`]*\`).*/\1/")")
-		INPUT_BUF=$(printf "$INPUT_BUF" | sed -r "s/^(\`[^\`]*\`)//" )
+		command+=("$(printf -- "$INPUT_BUF" | sed -r "s/^(\`[^\`]*\`).*/\1/")")
+		INPUT_BUF=$(printf -- "$INPUT_BUF" | sed -r "s/^(\`[^\`]*\`)//" )
 	    else
-		command+=("$(printf "$INPUT_BUF" | sed -r "s/^(^[^ ]*).*/\1/")")
-		INPUT_BUF=$(printf "$INPUT_BUF" | sed -r "s/^[^ ]*//")
+		command+=("$(printf -- "$INPUT_BUF" | sed -r "s/^(^[^ ]*).*/\1/")")
+		INPUT_BUF=$(printf -- "$INPUT_BUF" | sed -r "s/^[^ ]*//")
 	    fi
 	    INPUT_BUF=${INPUT_BUF## }
 	done
