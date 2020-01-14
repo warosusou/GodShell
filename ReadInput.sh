@@ -73,8 +73,19 @@ function ReadInput () { #第一引数にstatusを第二引数にhistory機能有
     }
 
     function Tabkey () { #第一引数にTabを押したときに表示されるCommand(default=build)
-	BUFF=${1:-"build"}
-	cchar=${#BUFF}
+	local json=$(cat $loaderFunction_File)
+	local -a CommandList=$(JsonAllKey "$json")
+	local -a exception=($(arrayFilter "$BUFF" "${CommandList[@]}"))
+	if [ "${#exception[@]}" -ne 0 ]; then
+	    if [ "${#exception[@]}" -eq 1 ]; then
+		BUFF=${exception[0]}
+		cchar=${#BUFF}
+	    else
+		printf "\n"	
+		echo "${exception[@]}"
+	    fi
+	fi
+	
     }
 
     function Enterkey () {

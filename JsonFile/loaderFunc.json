@@ -3,4 +3,5 @@
  "build": "startBuild",
  "emacs": "startEmacs",
  "debug": "bash debug.sh" 
+ "config": "changeConfig"
 }

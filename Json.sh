@@ -46,3 +46,11 @@ EOF
 	echo "$result"
     fi
 }
+
+function JsonAllKey {
+    local parsedjson=$(printf "$1" | sed 's/^{//' | sed 's/}$//')
+    local formattedjson=$(printf "$parsedjson" | sed 's/^{\(.*\)}$/\1/' | tr -d ',')
+    local result=$(printf "$formattedjson" | tr -d '"' | sed 's/^.+: //' )
+    result=$(printf "$result" | sed "s/^ //"| sed "s/^${formattedinput}: //" | sed "s/://g" | cut -d ' ' -f 1)
+    echo "$result"
+}
