@@ -107,15 +107,15 @@ fi
     else
 	./$2.out
 	echo "-----Program end-----"
-	read -p "Need Emacs ? [ y : n ] > " NeedEmacs
-	if [ "${NeedEmacs}" = "y" ]; then
-	    ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep $2.txt | wc -l`
-	    if [ $ALIVE -eq 0 ]; then
-		echo "Starting Emacs"
-		emacs $2.txt &
-	    else
-		echo "Emacs already started"
+	ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep $2.txt | wc -l`
+	if [ $ALIVE -eq 0 ]; then
+	    read -p "Need Emacs $2.txt ? [ y : n ] > " NeedEmacs
+	    if [ "${NeedEmacs}" = "y" ]; then
+		    echo "Starting Emacs"
+		    emacs $2.txt &
 	    fi
+	else
+	    echo "Emacs $2.txt already started"
 	fi
     fi
 )
