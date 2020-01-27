@@ -46,3 +46,9 @@ function changeConfig () {
     ls JsonFile
     
 }
+
+function Opentxt () (
+    cd ${Working_DIR}
+    emacs $Question_NUM.txt &
+    echo "提出txtを開きました。"
+)
