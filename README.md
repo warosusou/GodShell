@@ -21,7 +21,7 @@ C言語、Java対応
 No Demo  
 
 ## Usage
-./loader.sh [ ディレクトリ直接指定 ] <i>課題番号(第n回講義)</i> <i>問番号</i>  
+`./loader.sh [ ディレクトリ直接指定 ] <i>課題番号(第n回講義)</i> <i>問番号</i>`  
 上記コマンドにより、指定ディレクトリ（デフォルトディレクトリを後に選択可能）内に以下の構造のフォルダを生成  
 ex)C言語loader  
 Default_DIR  
@@ -37,9 +37,9 @@ Default_DIR
 automation-modeに y を入力すると提出ファイルへの書き込みを自動的に行ってくれます。サンプルの入力を保存でき、矢印キーで呼び出せるようになります。デバッグに有効です。  
 しかし入力ごとに出力が繰り返されるプログラムには適さない場合が多いです。提出ファイルへの出力の体裁が崩れます。  
 automation-mode y のときのみ rand コマンドが使用できます。  
-`(バッククオート)で括ったうえでrandの書式を入力してください。  
+\`(バッククオート)で括ったうえでrandの書式を入力してください。  
 ***rand 書式***  
-rand [ 行個数 ] [ 列個数 ] 最小値 最大値  
+`rand [ 行個数 ] [ 列個数 ] 最小値 最大値`  
 
 - quit  
 loader終了コマンドです。  
@@ -62,5 +62,5 @@ Classの作成に使います。クラス名はオプションです。何も入
 編集するClassを変更するときに使います。makeコマンド時に自動でこれが実行され、メインclassが移るので注意が必要です。emacsやbuildがなされるのはここで選択したClassです。  
 
 ## Install
-git pull http://github.com/warosusou/GodShell  
+`git pull http://github.com/warosusou/GodShell`  
 SSH接続でないとできない場合が存在するので注意。どちらにせよpullリクエストの時点でinstallできます。  
