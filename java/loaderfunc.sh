@@ -6,7 +6,7 @@ function makeClass () {
     
     function isUseReservedWords () {
         local classname=$1
-        local -a ReservedWords=("abstract" "boolean" "break" "byte" "case" "catch" "char" "class" "const" "continue" "default" "do" "double" "else" "enum" "extends" "false" "final" "finally" "float" "for" "goto" "if" "import" "implements" "instanceof" "int" "interface" "long" "native" "new" "null" "package" "private" "protected" "public" "return" "short" "static" "strictfp" "super" "switch" "synchronize" "this" "throw" "throws" "transient" "true" "try" "void" "voltile" "while")
+        local -a ReservedWords=("abstract" "boolean" "break" "byte" "case" "catch" "char" "class" "const" "continue" "default" "do" "double" "else" "enum" "extends" "false" "final" "finally" "float" "for" "goto" "if" "import" "implements" "instanceof" "int" "interface" "long" "native" "new" "null" "package" "private" "protected" "public" "return" "short" "static" "strictfp" "super" "switch" "synchronize" "this" "throw" "throws" "transient" "true" "try" "void" "voltile" "while" "Applet" "Graphics" "Image" "String" "Integer" "MouseEvent" "MouseListener" "MouseMotionListener" "Button" "Choice" "ActionEvent" "ActionListener" "ItemEvent" "ItemListener" "Thread" "Runnable" "FlowLayout" "BorderLayout" "Panel" "Canvas")
         for word in ${ReservedWords[@]}; do
             if [ "$classname" = "$word" ]; then
                 return 0
@@ -27,7 +27,7 @@ function makeClass () {
             continue
         elif [[ "${ClassName:0:1}" =~ ^[a-z] ]]; then
             if isUseReservedWords $ClassName; then
-                echo "そのClassNameは予約語として登録されています。"
+                echo "そのClassNameは予約語もしくは開発環境として用意されている名前として登録されています。"
                 read -p "Class名を入力してください > " ClassName
                 continue
             fi
@@ -78,6 +78,10 @@ function selectClass () {
     fi
     local count=-1
     cd $Working_DIR
+    if [ ! -e "*.java" ]; then
+        echo ".javaファイルが1つも存在しません。"
+        return 1
+    fi
     classname=(`ls *.java | tr -d .java`)
     cd $SCRIPT_DIR
     if [ $count -gt 0 ]; then
@@ -98,6 +102,9 @@ function selectClass () {
 function changeDate () (
     cd $Working_DIR
     date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
+    if [ ! -e "*.java" ]; then
+        return 0
+    fi
     for classname in `ls *.java`; do
         temp=`cat ${classname} | sed -e "1,4s/\(提出日\|[0-9]\{4\}年[0-9]\+月[0-9]\+日\)/${date[0]}${date[1]}${date[2]}/"`
         echo "$temp"  > $classname
@@ -108,6 +115,9 @@ function changeDate () (
 function loaderQuit () {
     changeDate
     cd $Working_DIR
+    if [ ! -e "*.java" ]; then
+        return 0
+    fi
     for classname in `ls *.java`; do
         ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep ${classname} | wc -l`
         PROCESS_ID=`ps -ef | grep $USERNAME | grep emacs | grep ${classname} | tr -s ' ' | cut -d ' ' -f 2`
