@@ -77,6 +77,10 @@ if [ ! -d $Working_DIR ]; then
     mkdir $Working_DIR
 fi
 
+if [ ! -f "*.java" ]; then
+    makeClass
+fi
+
 while :
 do
     ReadInput loader; DATA=( $BUFF )
