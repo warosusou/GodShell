@@ -9,9 +9,16 @@ if [ $# -ne 4 ]; then
     exit 1
 fi
 
+echo "-----Compile start-----"
+
 (
     cd $3
-    javac $4.java
+    if [ $? -ne 0 ]; then
+        echo ".javaファイルが1つも存在しません。"
+        return 1
+    fi
+    classname=(`ls *.java`)
+    javac ${classname[@]}
 )
 cstatus=$?
 

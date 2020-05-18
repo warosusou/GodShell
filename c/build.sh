@@ -9,6 +9,9 @@ if [ $# -ne 3 ]; then
     exit 1
 fi
 
+echo "-----Compile start-----"
+
+
 (
     cd $3
     gcc -Wall -lm $2.c -o $2.out
