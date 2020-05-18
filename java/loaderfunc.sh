@@ -78,23 +78,34 @@ function selectClass () {
     fi
     local count=-1
     cd $Working_DIR
-    if [ ! -e "*.java" ]; then
+    ls *.java >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
         echo ".javaファイルが1つも存在しません。"
         return 1
     fi
-    classname=(`ls *.java | tr -d .java`)
+    classname=(`ls *.java | sed 's/.java//g'`)
     cd $SCRIPT_DIR
-    if [ $count -gt 0 ]; then
+    if [ "${#classname[@]}" -gt 2 ]; then
         for name in ${classname[@]}; do
             ((count++))
-            echo "$count.  $classname"
+            echo "$count.  $name"
         done
         read -p "0~$countのクラスのいずれかを選択してください。 > " buf
-        if [ 0 -ge $buf -a $buf -ge $count ]; then
-            ClassName=${classname[$buf]}
-        fi
+        while [ $buf -lt 0 -o $count -lt $buf ];
+        do
+            read -p "範囲から外れています。もう一度入力してください。 > " buf
+        done
+        ClassName=${classname[$buf]}
     else
-        ClassName=${classname[0]}
+        if [ "${#classname[@]}" -eq 1 ]; then
+            ClassName=${classname[0]}
+        else
+            if [ "$ClassName" = "${classname[0]}" ]; then
+                ClassName="${classname[1]}";
+            else
+                ClassName="${classname[0]}"
+            fi
+        fi
     fi
     echo "編集クラスを$ClassName.javaに設定しました。"
 }
@@ -102,7 +113,8 @@ function selectClass () {
 function changeDate () (
     cd $Working_DIR
     date=(`date | tr -s ' ' | cut -f 1 -d " "` `date | tr -s ' '  | cut -f 2 -d " "` `date | tr -s ' '  | cut -f 3 -d " "`)
-    if [ ! -e "*.java" ]; then
+    ls *.java >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
         return 0
     fi
     for classname in `ls *.java`; do
@@ -115,7 +127,8 @@ function changeDate () (
 function loaderQuit () {
     changeDate
     cd $Working_DIR
-    if [ ! -e "*.java" ]; then
+    ls *.java >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
         return 0
     fi
     for classname in `ls *.java`; do

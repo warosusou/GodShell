@@ -75,9 +75,6 @@ SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 if [ ! -d $Working_DIR ]; then
     mkdir $Working_DIR
-fi
-
-if [ ! -f "*.java" ]; then
     makeClass
 fi
 
