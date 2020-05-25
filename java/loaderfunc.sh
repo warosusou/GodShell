@@ -53,7 +53,6 @@ function makeClass () {
     else
 	    echo "File already exsists..."
     fi
-    startEmacs
     selectClass $ClassName
     cd $SCRIPT_DIR
 }
@@ -66,6 +65,7 @@ function selectClass () {
         if [ -f $1.java ]; then
             ClassName=$1
             echo "編集クラスを$ClassName.javaに設定しました。"
+            startEmacs
             return 0
         else
             echo "そのようなClassは存在しません。"
@@ -108,6 +108,7 @@ function selectClass () {
         fi
     fi
     echo "編集クラスを$ClassName.javaに設定しました。"
+    startEmacs
 }
 
 function changeDate () (
