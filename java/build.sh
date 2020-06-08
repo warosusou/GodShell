@@ -4,7 +4,7 @@
 
 INPUT=()
 
-if [ $# -ne 4 ]; then
+if [ $# -lt 4 ]; then
     echo "Error: Not Enough Parameter "
     exit 1
 fi
@@ -86,6 +86,8 @@ if [ "${auto}" = "y" ]; then
     do
 	INPUT[$i]=${INPUT[$i]%% }
     done
+else
+    INPUT=("${@:5}")
 fi
 
 #RESULT=$(cat <<EOF
@@ -112,7 +114,7 @@ fi
 	        echo "${RESULT}" >> $2.txt
 	    fi
     else
-	    java $4
+	    java $4 ${INPUT[@]}
 	    echo "-----Program end-----"
 	    ALIVE=`ps -ef | grep $USERNAME | grep emacs | grep $2.txt | wc -l`
 	    if [ $ALIVE -eq 0 ]; then

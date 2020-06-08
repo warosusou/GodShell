@@ -146,7 +146,7 @@ function loaderQuit () {
 
 function startBuild () (
     cd ${SCRIPT_DIR}
-    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" "${ClassName}"
+    bash build.sh "${Assign_NUM}" "${Question_NUM}" "${Working_DIR}" "${ClassName}" $@
 )
 
 
